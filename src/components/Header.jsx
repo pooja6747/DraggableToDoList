@@ -42,26 +42,22 @@ const Header = () => {
     return (
         <>
 
-            <nav className="navbar navbar-expand-lg bg-dark px-5">
+            <nav className="navbar navbar-expand-lg navbar-light bg-dark text-white">
                 <div className="container-fluid">
-                    <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo01" aria-controls="navbarTogglerDemo01" aria-expanded="false" aria-label="Toggle navigation">
-                        <span className="navbar-toggler-icon"></span>
+                    <a className="navbar-brand text-white" href="#">TODO List</a>
+                    <button className="navbar-toggler text-white" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                        <span className="navbar-toggler-icon text-white"></span>
                     </button>
-                    <div className="collapse navbar-collapse" id="navbarTogglerDemo01">
-                        <a className="navbar-brand text-white" href="#">Hidden brand</a>
-                        <ul className="navbar-nav me-auto mb-2 mb-lg-0 text-white">
-                        </ul>
-                        <form className="d-flex" role="search">
+                    <div className="collapse navbar-collapse" id="navbarSupportedContent">
+                        <form className="d-flex">
+
                             <button type="button" className="btn btn-outline-success text-white me-0" data-bs-toggle="modal" data-bs-target="#exampleModal">
                                 Create New Board
                             </button>
-
-                            {/* <button className="btn btn-outline-success text-white me-0" data-bs-toggle="modal" data-bs-target="#exampleModal">Create New Board</button> */}
                         </form>
                     </div>
                 </div>
             </nav>
-
             <ToDoList data={users} />
 
 
@@ -89,7 +85,7 @@ const Header = () => {
                                     value={tname}
                                 ></input>
                                 <br></br>
-                              
+
                                 <br></br>
                                 <label>Deadline</label>
                                 <input
