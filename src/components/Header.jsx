@@ -30,6 +30,7 @@ const Header = () => {
             dob,
         };
         setUsers([...users, user]);
+        // localStorage.setItem("users", JSON.stringify([...users, newUser]));
         console.log("add", users)
         window.location.reload(); // Reload the page
     };
@@ -103,7 +104,7 @@ const Header = () => {
                         </div>
                         <div className="modal-footer">
                             <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                            <button type="button" className="btn btn-primary" onClick={handleAddBookSubmit}>ADD</button>
+                            <button type="button" className="btn btn-primary" onClick={handleAddBookSubmit} data-bs-dismiss="modal">ADD</button>
                         </div>
                     </div>
                 </div>

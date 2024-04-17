@@ -96,6 +96,7 @@ const ToDoList = () => {
                                                             <div className="card-body">
                                                                 <p>{task.tname}</p>
                                                                 <span>{task.dob}</span><br />
+                                                                <button onClick={() => deleteUser(task.id)}>DELETE</button>
                                                             </div>
                                                         </div>
                                                     )}
