@@ -1,40 +1,29 @@
 import React, { useState, useEffect } from 'react';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
-import Modal from './Modal';
 
-const ToDoList = () => {
-
+const Board = ({ title }) => {
     const getDatafromLS = () => {
-        const data = localStorage.getItem("users");
-        if (data) {
-            const parsedData = JSON.parse(data);
-            // Assuming each task object has a unique property called 'id'
-            return parsedData.map((user, index) => ({
-                ...user,
-                id: `${user.id}_${index}` // Creating a unique id for each task
-            }));
-        } else {
-            return [];
-        }
+        const data = localStorage.getItem('users');
+        return data ? JSON.parse(data).map((user, index) => ({
+            ...user,
+            id: `${user.id}_${index}`, // Ensure each task has a unique ID
+        })) : [];
     };
 
-
     const [tasks, setTasks] = useState({
-        toDo: getDatafromLS(),
-        doing: [],
-        done: []
+        customeBoard: getDatafromLS(), // Use a specific key if your data is structured that way
     });
 
-
-
+    useEffect(() => {
+        localStorage.setItem('users', JSON.stringify(tasks.customeBoard)); // Sync state to local storage
+    }, [tasks]);
 
     const deleteUser = (id) => {
-        const newTasks = { ...tasks };
-        Object.keys(newTasks).forEach(key => {
-            newTasks[key] = newTasks[key].filter(task => task.id !== id);
-        });
-        setTasks(newTasks);
-        localStorage.setItem('users', JSON.stringify(newTasks.toDo)); // Assuming 'toDo' is your main list
+        const updatedTasks = {
+            ...tasks,
+            customeBoard: tasks.customeBoard.filter(task => task.id !== id),
+        };
+        setTasks(updatedTasks);
     };
 
     const onDragEnd = (result) => {
@@ -51,7 +40,6 @@ const ToDoList = () => {
                 [source.droppableId]: result[source.droppableId],
                 [destination.droppableId]: result[destination.droppableId]
             }));
-
         }
     };
 
@@ -67,34 +55,22 @@ const ToDoList = () => {
         const destClone = Array.from(destination);
         const [removed] = sourceClone.splice(droppableSource.index, 1);
         destClone.splice(droppableDestination.index, 0, removed);
+
         return {
             [droppableSource.droppableId]: sourceClone,
-            [droppableDestination.droppableId]: destClone
+            [droppableDestination.droppableId]: destClone,
         };
     };
 
-
-
-    const [isModalOpen, setIsModalOpen] = useState(false); // State to manage modal visibility
-
-    const handleOpenModal = () => {
-        setIsModalOpen(true);
-    };
-
-    const handleCloseModal = () => {
-        setIsModalOpen(false);
-    };
-
-    return (<>
-
-        <DragDropContext onDragEnd={onDragEnd} >
+    return (
+        <DragDropContext onDragEnd={onDragEnd}>
             <div className="container-fluid mt-5 px-5">
                 <div className="row">
-                    {Object.keys(tasks).map((key) => (
+                    {Object.keys(tasks).map(key => (
                         <div className="col-md-3" key={key}>
                             <div className="card bg-dark text-white">
-                                <div className="card-header"><h3>{key.replace(/^./, key[0].toUpperCase())}</h3></div>
-                                <Droppable droppableId={key} key={key}>
+                                <div className="card-header"><h3>{title}</h3></div>
+                                <Droppable droppableId={key}>
                                     {(provided) => (
                                         <div {...provided.droppableProps} ref={provided.innerRef} className="card-body">
                                             {tasks[key].map((task, index) => (
@@ -105,9 +81,7 @@ const ToDoList = () => {
                                                                 <p>{task.tname}</p>
                                                                 <span>{task.dob}</span><br />
                                                                 <button onClick={() => deleteUser(task.id)}>DELETE</button>
-                                                                <button type="button" className="btn text-white" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                                                                    ADD
-                                                                </button>
+                                                                
                                                             </div>
                                                         </div>
                                                     )}
@@ -123,9 +97,7 @@ const ToDoList = () => {
                 </div>
             </div>
         </DragDropContext>
-        <Modal isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen} />
-    </>
     );
 }
 
-export default ToDoList;
+export default Board;

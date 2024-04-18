@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import ToDoList from './ToDoList';
+import Modal from './Modal';
+import Board from './Board';
 
 const Header = () => {
     // getting the values of local storage
@@ -31,13 +33,66 @@ const Header = () => {
         };
         setUsers([...users, user]);
         // localStorage.setItem("users", JSON.stringify([...users, newUser]));
-        console.log("add", users)
         window.location.reload(); // Reload the page
+        handleCloseModal(); // Close the modal after adding
     };
     // saving data to local storage
     useEffect(() => {
         localStorage.setItem("users", JSON.stringify(users));
     }, [users]);
+
+    const [isModalOpen, setIsModalOpen] = useState(false); // State to manage modal visibility
+    const [isCustomeModalOpen, setisCustomeModalOpen] = useState(false)
+
+    const handleOpenModal = () => {
+        setIsModalOpen(true);
+    };
+
+    const handleCloseModal = () => {
+        setIsModalOpen(false);
+    };
+
+    const handleCustomOpenModal = () => {
+        setisCustomeModalOpen(true)
+    }
+
+    const handleCustomcloseModal = () => {
+        setisCustomeModalOpen(false)
+    }
+
+    const [title, settitle] = useState("");
+    const [board, setBoard] = useState([])
+
+
+    const handleNewBoard = () => {
+      const newBoardData = { title: title }; 
+        setBoard(prevBoard => {
+            const updatedBoard = [...prevBoard, newBoardData];
+            localStorage.setItem('customData', JSON.stringify(updatedBoard));
+        });
+    };
+
+   
+    const [newboard, setNewBoard] = useState([])
+    
+    const generateUniqueKey = () => {
+        return '_' + Math.random().toString(36).substr(2, 9);
+    };
+
+    useEffect(() => {
+        const storedBoardData = JSON.parse(localStorage.getItem("customData"));
+       
+        if (storedBoardData) {
+          const storedBoardComponents = storedBoardData.map(data => (
+            <Board key={generateUniqueKey()} title={data.title} />
+          ));
+          setNewBoard(storedBoardComponents);
+        }
+      }, [newboard]);
+
+    // const storedBoardComponents = board.map(data => <Board key={generateUniqueKey()} title={data.title} />);
+    // setNewBoard(storedBoardComponents);
+
 
     return (
         <>
@@ -52,21 +107,34 @@ const Header = () => {
                         <form className="d-flex">
 
                             <button type="button" className="btn btn-outline-success text-white me-0" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                                Create New Board
+                                Add TODO
+                            </button>
+                            <button type="button" className="btn btn-outline-success text-white me-0" data-bs-toggle="modal" data-bs-target="#customModalLabel">
+                                Create new BOard
                             </button>
                         </form>
                     </div>
                 </div>
             </nav>
-            <ToDoList data={users} />
 
+            <ToDoList isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen} />
 
-            {/* <!-- Modal --> */}
-            <div className="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <Modal isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen} />
+            {
+                newboard.map((data, index) => (
+                    <div key={index}>
+                        {data}
+                    </div>
+                ))
+            }
+
+            {/* custom modal */}
+
+            <div className={`modal fade ${isCustomeModalOpen ? 'true' : ''}`} id="customModalLabel" tabindex="-1" aria-labelledby="customModalLabel" aria-hidden="true">
                 <div className="modal-dialog">
                     <div className="modal-content">
                         <div className="modal-header">
-                            <h1 className="modal-title fs-5" id="exampleModalLabel">Create To Do</h1>
+                            <h1 className="modal-title fs-5" id="customModalLabel">New Board</h1>
                             <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div className="modal-body">
@@ -76,31 +144,22 @@ const Header = () => {
 
                             >
                                 <br></br>
-                                <label>Task For TODO</label>
+                                <label>Enter board title</label>
                                 <input
                                     type="text"
+                                    placeholder='Enter board title'
                                     className="form-control"
                                     required
-                                    onChange={(e) => settname(e.target.value)}
-                                    value={tname}
+                                    onChange={(e) => settitle(e.target.value)}
+                                    value={title}
                                 ></input>
                                 <br></br>
 
-                                <br></br>
-                                <label>Deadline</label>
-                                <input
-                                    type="date"
-                                    className="form-control"
-                                    required
-                                    onChange={(e) => setDob(e.target.value)}
-                                    value={dob}
-                                ></input>
-                                <br></br>
                             </form>
                         </div>
                         <div className="modal-footer">
                             <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                            <button type="button" className="btn btn-primary" onClick={handleAddBookSubmit} data-bs-dismiss="modal">ADD</button>
+                            <button type="button" className="btn btn-primary" onClick={handleNewBoard} data-bs-dismiss="modal">CREATE</button>
                         </div>
                     </div>
                 </div>
